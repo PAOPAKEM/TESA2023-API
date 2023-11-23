@@ -3,6 +3,11 @@ import requests
 import time
 import datetime
 
+from src.pages.pageconf import( 
+    API_ADDRESS,
+    BROKER_ADDRESS,
+)
+
 st.set_page_config(page_title="Water: dbapi", page_icon=":droplet:")
 st.title("DB & API Status")
 

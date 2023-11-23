@@ -3,9 +3,10 @@ import requests
 import time
 import datetime
 
-API_ADDRESS = "127.0.0.1"
-BROKER_ADDRESS = "127.0.0.1"
-
+from src.pages.pageconf import( 
+    API_ADDRESS,
+    BROKER_ADDRESS,
+)
 
 st.set_page_config(page_title="Water: Picture", page_icon=":droplet:")
 st.title("Take a Picture.....")

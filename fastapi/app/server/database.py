@@ -14,6 +14,16 @@ def matlab_water_helper(water) -> dict:
         "data": water["data"],
     }
 
+def matlab_full_water_helper(water) -> dict:
+    return {
+        "id": str(water["_id"]),
+        "Height_S1": water["Height_S1"],
+        "Discharge_S1": water["Discharge_S1"],
+        "Discharge_S2": water["Discharge_S2"],
+        "Discharge_S3": water["Discharge_S3"],
+        "Height_3": water["Height_3"],
+    }
+
 class WaterDatabase():
     def __init__(self, collection:str, host:str = "mongoDB", port:int = "27017", auth_user:str = "admin", auth_pass:str = "hellboy_000"):
         self.auth_user = auth_user
@@ -71,7 +81,13 @@ class MatlabDatabase():
     async def add_water(self, water_data: dict) -> dict:
         water = await self._collection.insert_one(water_data)
         new_water = await self._collection.find_one({"_id": water.inserted_id})
-        return matlab_water_helper(new_water)
+        return matlab_full_water_helper(new_water)
+    
+    async def retrieve_latest(self, n: int, order: int = -1, value: str = "$natural"):
+        waters = []
+        async for water in self._collection.find().sort([(value, order )]).limit(int(n)):
+            waters.append(matlab_full_water_helper(water))
+        return waters
 
     # async def retrieve_water(self, id: str) -> dict:
     #     water = await self._collection.find_one({"_id": ObjectId(id)})

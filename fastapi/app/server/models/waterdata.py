@@ -47,4 +47,8 @@ class WaterLevel(BaseModel):
 ## Matlab data
 
 class MatlabData(BaseModel):
-    data: List[float] = Field(...)
+    Height_S1: List[float] = Field(...)
+    Discharge_S1: List[float] = Field(...)
+    Discharge_S2: List[float] = Field(...)
+    Discharge_S3: List[float] = Field(...)
+    Height_3: List[float] = Field(...)
