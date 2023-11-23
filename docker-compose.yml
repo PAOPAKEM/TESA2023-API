@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  web:
+    build:
+      context: ./fastapi
+    container_name: fastapi
+    env_file:
+      - .env
+    volumes:
+      - ./fastapi/app:/code/app
+    ports:
+      - "80:80"
+    depends_on:
+      mongodb:
+        condition: service_started
+      emqx:
+        condition: service_healthy
+    networks:
+      - emqx-bridge
+        # aliases:
+        # - api.main.io
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    env_file:
+      - .env
+    volumes:
+      - ./mongodb:/data/db
+    ports:
+      - "27017:27017"
+    environment:
+      - "MONGO_INITDB_DATABASE=${MONGO_DB}"
+      - "MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}"
+      - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}"
+    networks:
+      - emqx-bridge
+    # healthcheck:
+    #   test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+    #   interval: 10s
+    #   timeout: 10s
+    #   retries: 5
+    #   start_period: 40s
+
+  emqx:
+    image: emqx:latest
+    container_name: emqx-main
+    environment:
+    - "EMQX_NODE_NAME=emqx@node.emqx.io"
+    - "EMQX_CLUSTER__DISCOVERY_STRATEGY=static"
+    - "EMQX_CLUSTER__STATIC__SEEDS=[emqx@node.emqx.io]"
+    - "EMQX_DASHBOARD__DEFAULT_USERNAME=admin"
+    - "EMQX_DASHBOARD__DEFAULT_PASSWORD=weak_password"
+    healthcheck:
+      test: ["CMD", "/opt/emqx/bin/emqx", "ctl", "status"]
+      interval: 5s
+      timeout: 25s
+      retries: 5
+    networks:
+      emqx-bridge:
+        aliases:
+        - node.emqx.io
+    ports:
+      - 1883:1883 # mqtt protocol
+      - 8083:8083 # mqtt over websocket
+      - 8084:8084 # mqtt over websocket
+      - 8883:8883 # mqtts protocol
+      - 18083:18083 # dashboard 
+    # volumes:
+    #   - $PWD/emqx1_data:/opt/emqx/data
+
+networks:
+  emqx-bridge:
