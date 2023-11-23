@@ -27,7 +27,7 @@ async def get_waters():
 
 # Get 1 water
 @router.get("/{id}", response_description="Waters retrieved")
-async def get_waters(id):
+async def get_water(id):
     waters = await database.retrieve_water(id)
     if waters:
         return ResponseModel(waters, "Waters data retrieved successfully")
@@ -52,11 +52,22 @@ async def get_latest_time(n):
 # Add water data by hand
 # we generate time stamp for the user, no need to worry
 @router.post("/", response_description="Water data added into the database")
-async def add_water_data(water: WaterLevel = Body(...)):
+async def add_water_data_manually(water: WaterLevel = Body(...)):
     water.timestamp = time()
     water = jsonable_encoder(water)
     new_water = await database.add_water(water)
     return ResponseModel(new_water, "Water added successfully")
+
+@router.delete("/{id}", response_description="Water data deleted from the database")
+async def delete_water_data(id: str):
+    deleted_water = await database.delete_water(id)
+    if deleted_water:
+        return ResponseModel(
+            "Water with ID: {} removed".format(id), "Water deleted successfully"
+        )
+    return ErrorResponseModel(
+        "An error occurred", 404, "Water with id {0} doesn't exist".format(id)
+    )
 
 # @router.get("/{id}", response_description="Water data retrieved")
 # async def get_water_data(id):

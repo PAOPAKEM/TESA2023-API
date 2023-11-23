@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
+from typing import List, Optional
 import time
 
 def ResponseModel(data, message):
@@ -42,3 +43,8 @@ class WaterLevel(BaseModel):
                 "waterlevel": 87.1,
             }
         }
+
+## Matlab data
+
+class MatlabData(BaseModel):
+    data: List[float] = Field(...)

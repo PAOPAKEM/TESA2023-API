@@ -11,7 +11,7 @@ app = FastAPI()
 
 app.include_router(MqttRouter, tags=["MQTT"],prefix="/mqtt")
 app.include_router(WaterRouter, tags=["Water"], prefix="/water")
-app.include_router(matlab, tags=["Water"], prefix="/water")
+app.include_router(matlab, tags=["matlab"], prefix="/matlab")
 
 # hello motherfucker
 @app.get("/", response_description="Send hello motherfucker", tags = ["Root"])

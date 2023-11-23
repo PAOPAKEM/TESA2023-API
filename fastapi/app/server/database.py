@@ -9,6 +9,11 @@ def water_level_helper(water) -> dict:
         "waterlevel": water["waterlevel"],
     }
 
+def matlab_water_helper(water) -> dict:
+    return {
+        "data": water["data"],
+    }
+
 class WaterDatabase():
     def __init__(self, collection:str, host:str = "mongoDB", port:int = "27017", auth_user:str = "admin", auth_pass:str = "hellboy_000"):
         self.auth_user = auth_user
@@ -51,7 +56,47 @@ class WaterDatabase():
             waters.append(water_level_helper(water))
         return waters
     
+class MatlabDatabase():
+    def __init__(self, collection:str, host:str = "mongoDB", port:int = "27017", auth_user:str = "admin", auth_pass:str = "hellboy_000"):
+        self.auth_user = auth_user
+        self.auth_pass = auth_pass
+        self.host = host
+        self.port = port
+        self.collection = collection
+
+        self._client = motor.motor_asyncio.AsyncIOMotorClient(f"mongodb://{self.auth_user}:{self.auth_pass}@{host}:{port}")
+        self._db = self._client.water_data
+        self._collection = self._db.get_collection(self.collection)
+
+    async def add_water(self, water_data: dict) -> dict:
+        water = await self._collection.insert_one(water_data)
+        new_water = await self._collection.find_one({"_id": water.inserted_id})
+        return matlab_water_helper(new_water)
+
+    # async def retrieve_water(self, id: str) -> dict:
+    #     water = await self._collection.find_one({"_id": ObjectId(id)})
+    #     if water:
+    #         return water_level_helper(water)
     
+    # async def delete_water(self, id: str):
+    #     water = await self._collection.find_one({"_id": ObjectId(id)})
+    #     if water:
+    #         await self._collection.delete_one({"_id": ObjectId(id)})
+    #         return True
+
+    # # order -1 lastest first, 1 oldest first
+    # # value ($natural = ID)(timestamp = timestamp) 
+    # async def retrieve_latest(self, n: int, order: int = -1, value: str = "$natural"):
+    #     waters = []
+    #     async for water in self._collection.find().sort([(value, order )]).limit(int(n)):
+    #         waters.append(water_level_helper(water))
+    #     return waters
+    
+    # async def retrieve_all_waters(self):
+    #     waters = []
+    #     async for water in self._collection.find():
+    #         waters.append(water_level_helper(water))
+    #     return waters
 
 
 ### EXTERN
