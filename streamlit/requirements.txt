@@ -1,0 +1,7 @@
+altair
+pandas
+streamlit
+pymongo
+plotly-express
+pprint
+st_pages
