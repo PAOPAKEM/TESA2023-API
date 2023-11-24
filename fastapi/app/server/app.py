@@ -16,4 +16,4 @@ app.include_router(matlab, tags=["matlab"], prefix="/matlab")
 # hello motherfucker
 @app.get("/", response_description="Send hello motherfucker", tags = ["Root"])
 async def send_dummy_data():
-    return ResponseModel("Hello Motherfucker", "Mother fucker hello'ed")
+    return ResponseModel("Hello", "MF hello'ed")

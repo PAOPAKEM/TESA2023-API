@@ -89,6 +89,12 @@ class MatlabDatabase():
             waters.append(matlab_full_water_helper(water))
         return waters
 
+    async def delete_water(self, id: str):
+        water = await self._collection.find_one({"_id": ObjectId(id)})
+        if water:
+            await self._collection.delete_one({"_id": ObjectId(id)})
+            return True
+
     # async def retrieve_water(self, id: str) -> dict:
     #     water = await self._collection.find_one({"_id": ObjectId(id)})
     #     if water:

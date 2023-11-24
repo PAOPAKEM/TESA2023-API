@@ -3,5 +3,4 @@ pandas
 streamlit
 pymongo
 plotly-express
-pprint
-st_pages
+st_peges==0.4.5
