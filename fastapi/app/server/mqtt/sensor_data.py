@@ -3,6 +3,7 @@ import json
 from fastapi.encoders import jsonable_encoder
 from fastapi_mqtt.fastmqtt import FastMQTT
 from fastapi_mqtt.config import MQTTConfig
+import time
 
 from server.database import (
     water_level_helper,
@@ -27,8 +28,9 @@ mqtt_config = MQTTConfig(host = "emqx",
     username="admin",
     password="weak_password")
 
+TESTERS_TOPIC = r"tgr2023/BaanAndSuan/vibe"
 CAPTURE_TOPIC = r"tgr2023/BaanAndSuan/cmd"
-RECEIVE_TOPIC = r"tgr2023/BaanAndSuan/btn_evt"
+RECEIVE_TOPIC = r"tgr2023/BaanAndSuan/evt"
 ### MQTT Client Settings here only
 
 fast_mqtt = FastMQTT(config=mqtt_config)
@@ -37,12 +39,20 @@ fast_mqtt.init_app(router)
 
 ### Routes for publish operations
 
-@router.get("/cap", response_description="Tell ESP32 to take a picture")
+@router.get("/capture", response_description="Tell ESP32 to take a picture")
 async def Take_a_picture_please():
     data = json.dumps({"ID": 44, "cmd": "capture"})
     try:
-        fast_mqtt.publish(RECEIVE_TOPIC, data) 
+        fast_mqtt.publish(CAPTURE_TOPIC, data) 
         return {"result": True, "message":"Request Sent: " + CAPTURE_TOPIC}
+    except Exception as e:
+        return {"result": False, "message":str(e)}
+
+@router.get("/alivecheck", response_description="For checking if EMQX is alive")
+async def check():
+    try:
+        fast_mqtt.publish(TESTERS_TOPIC, "vibecheck")
+        return {"result": True, "message":"Request Sent: " + TESTERS_TOPIC}
     except Exception as e:
         return {"result": False, "message":str(e)}
 
@@ -54,8 +64,13 @@ async def message_to_topic(client, topic, payload, qos, properties):
     # TODO: Insert Data to Database
     try:
         payload = json.loads(payload.decode())
-        water = WaterLevel(**payload)
+        water = WaterLevel(
+            name = payload["ID"],
+            timestamp= time.time(),
+            waterlevel = float(payload["result"]),
+        )
         water = jsonable_encoder(water)
+        print("CODER:", water)
         new_water = await database.add_water(water)
         print("Added to database: ", new_water)
     except Exception as e:

@@ -1,6 +1,20 @@
 version: '3'
 
 services:
+  streamlit:
+    image: streamlit:latest
+    container_name: streamlit
+    volumes:
+      - ./streamlit/app:/code
+      - ./streamlit/config:/root/.streamlit
+    ports:
+      - "8501:8501"
+    depends_on:
+      - mongodb
+      - web
+    networks:
+      - emqx-bridge
+
   web:
     build:
       context: ./fastapi
@@ -36,12 +50,6 @@ services:
       - "MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}"
     networks:
       - emqx-bridge
-    # healthcheck:
-    #   test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
-    #   interval: 10s
-    #   timeout: 10s
-    #   retries: 5
-    #   start_period: 40s
 
   emqx:
     image: emqx:latest
