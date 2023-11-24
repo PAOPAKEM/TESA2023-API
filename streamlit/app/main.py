@@ -11,6 +11,6 @@ if __name__ == "__main__":
         Page("src/pages/index.py", "Take a Picture", ":camera_with_flash:"),
         Page("src/pages/waterlevels.py", "Overall-Water-Levels", ":ocean:"),
         Page("src/pages/analytic.py", "Data-Analytics", ":chart_with_upwards_trend:"),
-        Page("src/pages/dbstat.py", "DB&API", ":keyboard:")
+        #Page("src/pages/dbstat.py", "DB&API", ":keyboard:")
     ]
 )

@@ -13,7 +13,7 @@ st.title("Take a Picture.....")
 st.write("Politely ask the sensor device to take a picture")
 if st.button("Please take a Picture"):
     try:
-        response = requests.get(f"http://{API_ADDRESS}/mqtt/cap")
+        response = requests.get(f"http://{API_ADDRESS}/mqtt/capture")
         st.markdown(f"Sent {':white_check_mark:' if response.json()['result'] == True else 'probable API error :no_entry_sign:'} : {response.json()['message']}")
         
         st.markdown("#### Latest Data :camera_with_flash: (wait a bit...)")
