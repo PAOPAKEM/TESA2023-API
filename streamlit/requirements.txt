@@ -3,4 +3,8 @@ pandas
 streamlit
 pymongo
 plotly-express
+<<<<<<< HEAD
 st_peges==0.4.5
+=======
+st_pages
+>>>>>>> 8a8a9f15e61cf5d79bd8bbb295fac18164616bb4
